@@ -7,3 +7,35 @@
  *
  *
  */
+/*  cutom yesa */
+
+.btn-whats {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 100;
+    width: 50px;
+    height: 50px;
+    background-color: #25D366;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 28px;
+}
+
+.btn-whats:hover {
+    background-color: #1caa50;
+}
+
+.btn-whats a {
+    text-decoration: none;
+}
+
+.btn-whats a:hover {
+    font-weight: bold;
+    color: white;
+}
+.btn-whats a .fa-whatsapp{
+    color: #ffffff !important;
+}
