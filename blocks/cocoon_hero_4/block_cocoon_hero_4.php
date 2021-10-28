@@ -185,8 +185,16 @@ class block_cocoon_hero_4 extends block_base {
                           </div>
                         </div>
                         <input type="hidden" id="sesskey" name="sesskey" value="">
-                        <script>document.getElementById(\'sesskey\').value = M.cfg.sesskey;</script>
-                        <div class="search_option_button home5">
+                        <script>document.getElementById(\'sesskey\').value = M.cfg.sesskey;</script>';
+                        if($this->config->recaptcha == 0) {
+                          if (!isloggedin() || isguestuser()) {
+                            $this->content->text .= $this->getrecaptcha();
+                          }
+                        } elseif($this->config->recaptcha == 1) {
+                          $this->content->text .= $this->getrecaptcha();
+                        }
+                      $this->content->text .='
+                        <div class="search_option_button home5 mt-3">
                           <button type="submit" name="submit" id="submit" class="btn btn-block" data-ccn="form_button_text" data-ccn-c="color_form_button" data-ccn-co="bg" data-ccn-cv="'.$this->content->color_form_button.'">'.format_text($this->content->form_button_text, FORMAT_HTML, array('filter' => true)).'</button>
                         </div>
         							</form>
@@ -245,6 +253,28 @@ class block_cocoon_hero_4 extends block_base {
         return $this->content;
     }
 
+     function getrecaptcha() {
+       global $CFG;
+           // Is Moodle reCAPTCHA configured?
+           if (!empty($CFG->recaptchaprivatekey) && !empty($CFG->recaptchapublickey)) {
+               // Yes? Generate reCAPTCHA.
+               if (file_exists($CFG->libdir . '/recaptchalib_v2.php')) {
+                   // For reCAPTCHA 2.0.
+                   require_once($CFG->libdir . '/recaptchalib_v2.php');
+                   return '<div class="ccn_recaptcha_container">'. recaptcha_get_challenge_html(RECAPTCHA_API_URL, $CFG->recaptchapublickey).'</div>';
+               } else {
+                   // For reCAPTCHA 1.0.
+                   require_once($CFG->libdir . '/recaptchalib.php');
+                   return recaptcha_get_html($CFG->recaptchapublickey, null, $this->ishttps());
+               }
+           } else { // If debugging is set to DEVELOPER...
+               // Show indicator that {reCAPTCHA} tag is not required.
+               return '<a class="mt40 mb20 btn btn-danger" href="'.$CFG->wwwroot.'/admin/settings.php?section=manageauths"><i class="fa fa-warning"></i> Configure reCAPTCHA keys</a>';
+           }
+       // Logged-in as non-guest user (reCAPTCHA is not required) or Moodle reCAPTCHA not configured.
+       // Don't generate reCAPTCHA.
+       return '';
+    }
     /**
      * Serialize and store config data
      */
